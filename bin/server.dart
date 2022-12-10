@@ -67,7 +67,8 @@ void main(List<String> args) async {
     ..get('/user', ctrl.getUserData)
     ..post('/userFilter', ctrl.getUserDataFilter)
     ..post('/postUserData', ctrl.postUserData)
-    ..put('/putUpdateUser', ctrl.putUserData);
+    ..put('/putUpdateUser', ctrl.putUserData)
+    ..delete('/deleteUser', ctrl.deleteUser);
 
   // Configure a pipeline that logs requests.
   final handler = Pipeline().addMiddleware(logRequests()).addHandler(router);

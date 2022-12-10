@@ -52,9 +52,13 @@ class Controller {
     user.modified = getDateNow();
 
     var conn = await connectSql();
-    var sqlExecute =
-        "INSERT INTO user (nama, profesi, email, role_id, is_active, tanggal_input, modified) VALUES " +
-            "('${user.nama}','${user.profesi}','${user.email}','${user.role_id}','${user.is_active}','${user.tanggal_input}','${user.modified}')";
+    var sqlExecute = """
+        INSERT INTO user (nama, profesi, email, role_id, is_active, tanggal_input, modified) VALUES
+        (
+          '${user.nama}','${user.profesi}','${user.email}','${user.role_id}',
+          '${user.is_active}','${user.tanggal_input}','${user.modified}'
+        )        
+    """;
 
     var execute = await conn.query(sqlExecute, []);
 
@@ -70,9 +74,12 @@ class Controller {
     user.modified = getDateNow();
 
     var conn = await connectSql();
-    var sqlExecute =
-        "UPDATE user SET nama ='${user.nama}', profesi = '${user.profesi}'," +
-            " email = '${user.email}', role_id = '${user.role_id}', modified='${user.modified}' WHERE iduser ='${user.iduser}'";
+    var sqlExecute = """
+        UPDATE user SET nama ='${user.nama}', profesi = '${user.profesi}',
+                        email = '${user.email}', role_id = '${user.role_id}', 
+                        modified='${user.modified}' 
+        WHERE iduser ='${user.iduser}'
+    """;
 
     var execute = await conn.query(sqlExecute, []);
 
@@ -87,7 +94,9 @@ class Controller {
     User user = userFromJson(body);
 
     var conn = await connectSql();
-    var sqlExecute = "DELETE FROM USER WHERE iduser ='${user.iduser}'";
+    var sqlExecute = """ 
+      DELETE FROM USER WHERE iduser ='${user.iduser}'
+    """;
 
     var execute = await conn.query(sqlExecute, []);
 

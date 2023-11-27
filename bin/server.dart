@@ -1,23 +1,10 @@
 import 'dart:io';
-
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'article.dart';
+import 'article.dart'; //modeling of entity article
+import 'package:mysql1/mysql1.dart';
 import 'lib/controller.dart';
-
-Response _rootHandler(Request req) {
-  return Response.ok('Hello, World YES!\n');
-}
-
-Response _echoHandler(Request request) {
-  final message = request.params['message'];
-  return Response.ok('$message\n');
-}
-
-/* -------------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------- */
 
 List<Article> articles = [];
 
@@ -33,22 +20,19 @@ Future<Response> _postArticleHandler(Request request) async {
   }
 }
 
-Future<Response> _postDeleteArticleHandler(Request request) async {
-  String body = await request.readAsString();
-
-  try {
-    return Response.ok('{"Action": "Delete", "status": "Success !"}');
-  } catch (e) {
-    print(e);
-    return Response(400);
-  }
-}
-
 Response _getArticlesHandler(Request request) {
   return Response.ok(articlesToJson(articles));
 }
 
-/* -------------------------------------------------------------------------- */
+Response _rootHandler(Request req) {
+  return Response.ok(
+      'Hello, World Im Learning code API Web Service By Dart !\n');
+}
+
+Response _echoHandler(Request request) {
+  final message = request.params['message'];
+  return Response.ok('$message\n');
+}
 
 void main(List<String> args) async {
   // Use any available host or container IP (usually `0.0.0.0`).
@@ -56,25 +40,26 @@ void main(List<String> args) async {
 
   final Controller ctrl = Controller();
   ctrl.connectSql();
-
-// Configure routes.
-  final router = Router()
+  
+  // Configure routes.
+  final _router = Router()
     ..get('/', _rootHandler)
-    ..get('/echo/<message>', _echoHandler)
     ..get('/articles', _getArticlesHandler)
     ..post('/articles', _postArticleHandler)
-    ..delete('/articles', _postDeleteArticleHandler)
     ..get('/user', ctrl.getUserData)
     ..post('/userFilter', ctrl.getUserDataFilter)
     ..post('/postUserData', ctrl.postUserData)
     ..put('/putUpdateUser', ctrl.putUserData)
-    ..delete('/deleteUser', ctrl.deleteUser);
+    ..delete('/deleteUser', ctrl.deleteUser)
+    ..post('/signup', ctrl.signUp)
+    ..get('/checkAuth', ctrl.getCheckAuth)
+    ..get('/userAuth', ctrl.getUserDataWithAuth);
 
   // Configure a pipeline that logs requests.
-  final handler = Pipeline().addMiddleware(logRequests()).addHandler(router);
+  final handler = Pipeline().addMiddleware(logRequests()).addHandler(_router);
 
   // For running in containers, we respect the PORT environment variable.
-  final port = int.parse(Platform.environment['PORT'] ?? '8081');
+  final port = int.parse(Platform.environment['PORT'] ?? '8080');
   final server = await serve(handler, ip, port);
   print('Server listening on port ${server.port}');
 }
